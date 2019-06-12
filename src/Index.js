@@ -8,6 +8,7 @@ var _           = require('lodash'),
     serveIndex  = require('serve-index'),
     serveStatic = require('serve-static'),
     Log         = require("./Log");
+    cors        = require('cors')
 
 ///
 /// Process the arguments
@@ -43,25 +44,49 @@ if (!fs.existsSync(options.dir)){
 ///
 
 var app = express();
+app.use(cors())
 
 // parse text/plain
 app.use(
-    bodyParser.raw({ type: 'text/plain', limit: 1024 * 1024 * 10 }));
+    // bodyParser.raw({ type: 'text/plain', limit: 1024 * 1024 * 10 }));
+    bodyParser.json());
 
 ///
 /// POST '/:id/log' - Log the request body into a file. Each request will appended
-/// into a file.
+/// into a file.    
 ///
-app.post('/:id/log/', function(req, res){
+// app.post('/:id/log', function(req, res){
+//     console.log('AAAA');
+//     // console.log(req);
+//     var logName = req.params.id;
+//     Log(options.dir, logName)
+//     .write(req.body)
+//     .then(function(){
+//         res.send();
+//     });
 
-    var logName = req.params.id;
+// });
+
+
+app.post('/', function(req, res){
+    // console.log("got log",JSON.stringify(req.body));
+    var logName = req.params.id || 'howie';
     Log(options.dir, logName)
     .write(req.body)
     .then(function(){
-        res.send();
+        console.log("got log",JSON.stringify(req.body));
+        res.send("ok");
     });
 
 });
+
+// app.post('/api/users', function(req, res) {
+//     var user_id = req.body.id;
+//     var token = req.body.token;
+//     var geo = req.body.geo;
+
+//     res.send(user_id + ' ' + token + ' ' + geo);
+// });
 
 ///
 /// Get '/log' - Log the request body into a file. Each request will appended

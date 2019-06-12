@@ -83,7 +83,7 @@ var Log = function(baseLogDir, name){
         write: function(buffer){
 
             var dfd = Q.defer();
-
+            buffer = buffer + '\r\n';
             fs.appendFile(name, buffer, function(err){
                 if(err) dfd.reject(err);
                 else    dfd.resolve();
