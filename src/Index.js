@@ -28,6 +28,7 @@ if(!options.port || !options.dir){
     process.exit(1);
 }
 
+
 /// normalize options
 options.dir = path.resolve(options.dir);
 
@@ -70,12 +71,18 @@ app.use(
 
 app.post('/', function(req, res){
     // console.log("got log",JSON.stringify(req.body));
-    var logName = req.params.id || 'howie';
+    var logName = req.params.id || 'tablet';
+    console.log(JSON.stringify(req.body));
+    const formatted = req.body.logs.map(log => {
+        const logger = log.logger || 'none';
+        return `${log.timestamp} [${log.level}] [${logger}] ${log.message} ${log.stacktrace}`
+    });
+    const logs = formatted.join('\r\n');
     Log(options.dir, logName)
-    .write(req.body)
+    .write(logs)
     .then(function(){
-        console.log("got log",JSON.stringify(req.body));
-        res.send("ok");
+        // console.log(logs);
+        res.send("");
     });
 
 });
@@ -106,3 +113,8 @@ console.log(
 
 console.log(
     _.template("Logs directory '<%= dir %>'")({ dir: options.dir }));
+
+/*
+to run
+node src/Index.js -p 8000 -d logs
+*/
